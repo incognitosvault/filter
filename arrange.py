@@ -1,5 +1,6 @@
 import colorama
 import subprocess
+import sys
 def arranger(filepath="things_to_install"):
     print(colorama.Fore.BLUE + f"+ Hold while we rearrange the file it's too dirty...")
     with open(filepath, 'r') as f:
@@ -7,6 +8,23 @@ def arranger(filepath="things_to_install"):
             for i in f:
                 if i[0] == " ":
                     o.write(i.lower())
+
+def deb_checker():
+    try:
+        result = subprocess.run(
+            ["cat", "/etc/debian_version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True  # Raise CalledProcessError on non-zero exit codes
+        )
+        # If we reach here, the file exists and was read successfully
+        print("Debian system detected.")
+    except subprocess.CalledProcessError as e:
+        if "No such file or directory" in e.stderr:
+            sys.exit("We only accept Debian systems")
+        else:
+            sys.exit(f"An error occurred: {e.stderr}")
 
 def filter_make():
     print(colorama.Fore.BLUE + f"+ Seperating the sheeps from the goats...")
@@ -40,4 +58,5 @@ def isinstallable(package_name):
 
                     
 arranger()                
+deb_checker()
 filter_make()
